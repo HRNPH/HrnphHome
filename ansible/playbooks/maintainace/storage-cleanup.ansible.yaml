@@ -1,0 +1,19 @@
+---
+- name: Clean up unused Docker images
+  hosts: all
+  become: true
+
+  tasks:
+    - name: Ensure Docker is installed on Debian-based systems
+      ansible.builtin.apt:
+        name: docker.io
+        state: present
+      when: ansible_os_family == "Debian"
+
+    - name: Remove unused Docker images
+      community.docker.docker_prune:
+        images: true
+
+    - name: Display removed images information
+      ansible.builtin.debug:
+        msg: "{{ image_prune_result.stdout }}"
